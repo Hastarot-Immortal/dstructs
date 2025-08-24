@@ -1,5 +1,6 @@
 use crate::heap::{Heap, HeapType};
 
+#[derive(Clone)]
 pub struct BinaryHeap<T: PartialOrd> {
     elements: Vec<T>,
     h_type: HeapType,
@@ -63,7 +64,7 @@ where
 
 impl<T> Heap<T> for BinaryHeap<T>
 where
-    T: PartialOrd,
+    T: PartialOrd + Clone,
 {
     fn peek(&self) -> Option<&T> {
         if self.is_empty() {
@@ -95,5 +96,14 @@ where
 
     fn meld(&mut self, other: &mut Self) {
         self.rebuild_heap(&mut other.elements);
+    }
+    
+    fn merge(&self, other: &Self, new_heap_type: HeapType) -> Self {
+        let mut result = Self {
+            elements: self.elements.clone(),
+            h_type: new_heap_type,
+        };
+        result.rebuild_heap(&mut other.elements.clone());
+        result
     }
 }

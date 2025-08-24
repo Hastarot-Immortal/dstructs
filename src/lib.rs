@@ -35,4 +35,19 @@ mod binary_heap {
         assert_eq!(heap1.pop(), Some(2));
         assert_eq!(heap2.peek(), None);
     }
+
+    #[test]
+    fn merge() {
+        let mut heap1: BinaryHeap<u8> = BinaryHeap::new(HeapType::Max);
+        let mut heap2: BinaryHeap<u8> = BinaryHeap::new(HeapType::Min);
+
+        heap1.push(4);
+        heap1.push(7);
+        heap2.push(5);
+        heap2.push(2);
+        let heap3 = heap1.merge(&mut heap2, HeapType::Max);
+        assert_eq!(heap1.peek(), Some(&7));
+        assert_eq!(heap2.peek(), Some(&2));
+        assert_eq!(heap3.peek(), Some(&7));
+    }
 }
