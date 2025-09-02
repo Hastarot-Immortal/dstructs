@@ -1,14 +1,14 @@
-use crate::heap::{Heap, HeapType};
+use crate::{has_length::HasLength, heap::{Heap, HeapType}};
 
 #[derive(Clone)]
-pub struct BinaryHeap<T: PartialOrd> {
+pub struct BinaryHeap<T: PartialOrd + Clone> {
     elements: Vec<T>,
     h_type: HeapType,
 }
 
 impl<T> BinaryHeap<T>
 where
-    T: PartialOrd,
+    T: PartialOrd + Clone,
 {
     pub fn new(heap_type: HeapType) -> Self {
         Self {
@@ -17,16 +17,25 @@ where
         }
     }
 
-    pub fn len(&self) -> usize {
-        self.elements.len()
+    pub fn build_min(elements: Vec<T>) -> Self {
+        let mut result = Self {
+            elements,
+            h_type: HeapType::Min,
+        };
+        result.rebuild_heap();
+        result
+    } 
+
+    pub fn build_max(elements: Vec<T>) -> Self {
+        let mut result = Self {
+            elements,
+            h_type: HeapType::Max,
+        };
+        result.rebuild_heap();
+        result
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
-
-    fn rebuild_heap(&mut self, elements: &mut Vec<T>) {
-        self.elements.append(elements);
+    fn rebuild_heap(&mut self) {
         for index in (0..(self.len() >> 1)).rev() {
             self.heapify(index);
         }
@@ -37,12 +46,12 @@ where
         let left_index = (index << 1) + 1;
         let right_index = (index << 1) + 2;
 
-        if (left_index < self.len()) && !(self.h_type.is_correct(&self.elements, temp, left_index))
+        if (left_index < self.len()) && !(self.h_type.is_correct(&self.elements[temp], &self.elements[left_index]))
         {
             temp = left_index;
         }
         if (right_index < self.len())
-            && !(self.h_type.is_correct(&self.elements, temp, right_index))
+            && !(self.h_type.is_correct(&self.elements[temp], &self.elements[right_index] ))
         {
             temp = right_index;
         }
@@ -54,11 +63,20 @@ where
 
     fn fix_heap(&mut self, mut index: usize) {
         let parent = index >> 1;
-        if (index > 0) && !self.h_type.is_correct(&self.elements, parent, index) {
+        if (index > 0) && !self.h_type.is_correct(&self.elements[parent], &self.elements[index]) {
             self.elements.swap(index, parent);
             index = parent;
             self.fix_heap(index);
         }
+    }
+}
+
+impl<T> HasLength for BinaryHeap<T>
+where
+    T: PartialOrd + Clone,
+{
+    fn len(&self) -> usize {
+        self.elements.len()
     }
 }
 
@@ -95,15 +113,19 @@ where
     }
 
     fn meld(&mut self, other: &mut Self) {
-        self.rebuild_heap(&mut other.elements);
+        self.elements.append(&mut other.elements);
+        self.rebuild_heap();
     }
     
-    fn merge(&self, other: &Self, new_heap_type: HeapType) -> Self {
+    fn merge(self, other: Self, new_heap_type: HeapType) -> Self {
         let mut result = Self {
-            elements: self.elements.clone(),
+            elements: Vec::with_capacity(self.len() + other.len()),
             h_type: new_heap_type,
         };
-        result.rebuild_heap(&mut other.elements.clone());
+        result.elements.extend(self.elements.into_iter());
+        result.elements.extend(other.elements.into_iter());
+
+        result.rebuild_heap();
         result
     }
 }
