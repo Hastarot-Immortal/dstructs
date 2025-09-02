@@ -1,13 +1,11 @@
-pub mod heap;
-pub mod binary_heap;
-pub mod binomial_heap;
+pub mod heaps;
 pub mod has_length;
 
 #[cfg(test)]
 mod bin_heap {
     use super::*;
-    use binary_heap::BinaryHeap;
-    use heap::{HeapType, Heap};
+    use heaps::binary_heap::BinaryHeap;
+    use heaps::heap::{HeapType, Heap};
     
     #[test]
     fn pop() {
@@ -56,11 +54,11 @@ mod bin_heap {
 
 #[cfg(test)]
 mod binom_heap {
-    use crate::{binomial_heap::BinomialHeap, heap::Heap};
+    use crate::{heaps::binomial_heap::BinomialHeap, heaps::heap::{Heap,HeapType}};
 
     #[test]
     fn pop() {
-        let mut heap = BinomialHeap::new(crate::heap::HeapType::Min);
+        let mut heap = BinomialHeap::new(HeapType::Min);
         heap.push(2);
         heap.push(5);
         heap.push(1);
@@ -74,8 +72,8 @@ mod binom_heap {
 
     #[test]
     fn meld() {
-        let mut heap1 = BinomialHeap::new(crate::heap::HeapType::Min);
-        let mut heap2 = BinomialHeap::new(crate::heap::HeapType::Min);
+        let mut heap1 = BinomialHeap::new(HeapType::Min);
+        let mut heap2 = BinomialHeap::new(HeapType::Min);
         heap1.push(2);
         heap1.push(5);
         heap1.push(4);
@@ -95,8 +93,8 @@ mod binom_heap {
 
     #[test]
     fn merge() {
-        let mut heap1 = BinomialHeap::new(crate::heap::HeapType::Min);
-        let mut heap2 = BinomialHeap::new(crate::heap::HeapType::Min);
+        let mut heap1 = BinomialHeap::new(HeapType::Min);
+        let mut heap2 = BinomialHeap::new(HeapType::Min);
         heap1.push(2);
         heap1.push(5);
         heap1.push(4);
@@ -108,7 +106,7 @@ mod binom_heap {
         heap2.push(8);
         heap2.push(11);
 
-        let heap3 = heap1.clone().merge(heap2.clone(), crate::heap::HeapType::Max);
+        let heap3 = heap1.clone().merge(heap2.clone(), HeapType::Max);
 
         assert_eq!(heap1.peek(), Some(&2));
         assert_eq!(heap2.peek(), Some(&1));
