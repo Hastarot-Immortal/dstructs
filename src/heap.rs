@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum HeapType {
     Min,
     Max,
@@ -7,13 +7,12 @@ pub enum HeapType {
 impl HeapType {
     pub fn is_correct<T: PartialOrd>(
         &self,
-        array: &Vec<T>,
-        parent_index: usize,
-        child_index: usize,
+        parent: &T,
+        child: &T,
     ) -> bool {
         match self {
-            HeapType::Min => array[child_index] > array[parent_index],
-            HeapType::Max => array[child_index] < array[parent_index],
+            HeapType::Min => child > parent,
+            HeapType::Max => child < parent,
         }
     }
 }
@@ -23,5 +22,5 @@ pub trait Heap<T: PartialOrd + Clone> {
     fn pop(&mut self) -> Option<T>;
     fn push(&mut self, value: T);
     fn meld(&mut self, other: &mut Self);
-    fn merge(&self, other: &Self, new_heap_type: HeapType) -> Self;
+    fn merge(self, other: Self, new_heap_type: HeapType) -> Self;
 }
