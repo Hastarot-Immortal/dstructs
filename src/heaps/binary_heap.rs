@@ -1,4 +1,4 @@
-use crate::{has_length::HasLength, heap::{Heap, HeapType}};
+use crate::{has_length::HasLength, heaps::heap::{Heap, HeapType}};
 
 #[derive(Clone)]
 pub struct BinaryHeap<T: PartialOrd + Clone> {
