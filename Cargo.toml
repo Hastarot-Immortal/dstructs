@@ -4,3 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+murmur2 = "0.1.0"
+zerocopy = {version="0.8.26", features=["derive"]}
