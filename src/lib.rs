@@ -1,5 +1,6 @@
 pub mod heaps;
 pub mod has_length;
+pub mod probalistic;
 
 #[cfg(test)]
 mod binom_heap {
@@ -60,5 +61,24 @@ mod binom_heap {
         assert_eq!(heap1.peek(), Some(&2));
         assert_eq!(heap2.peek(), Some(&1));
         assert_eq!(heap3.peek(), Some(&11));
+    }
+}
+
+#[cfg(test)]
+mod b_filter {
+    use super::probalistic::bloom_filter::BloomFilter;
+
+    #[test]
+    fn insert_and_contains() {
+        let mut bf = BloomFilter::with_capacity(5);
+        bf.insert(10u8);
+        bf.insert(12);
+        bf.insert(13);
+        bf.insert(14);
+        bf.insert(15);
+        bf.insert(16);
+        assert!(bf.contains(&10));
+        assert!(!bf.contains(&7));
+        assert!(!bf.contains(&16));
     }
 }
