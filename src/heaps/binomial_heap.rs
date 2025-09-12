@@ -1,4 +1,4 @@
-use crate::{has_length::HasLength, heaps::heap::{Heap, HeapType}};
+use crate::{container::HasLength, heaps::heap::{Heap, HeapType}};
 
 #[derive(Clone)]
 pub struct BinomialHeap<T: PartialOrd + Clone> {

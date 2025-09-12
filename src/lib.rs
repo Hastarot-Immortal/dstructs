@@ -1,5 +1,5 @@
 pub mod heaps;
-pub mod has_length;
+pub mod container;
 pub mod probalistic;
 
 #[cfg(test)]

@@ -2,9 +2,9 @@ use std::f32::consts::LN_2;
 use murmur2::{murmur2, murmur64a};
 use zerocopy::{Immutable, IntoBytes};
 
-use crate::has_length::HasLength;
+use crate::container::{Container, HasLength, Insertable};
 
-pub struct BloomFilter<T, H: HasherWithSeed = MurmurHash, C: BloomFilterContainer<T> = Vec<T>>
+pub struct BloomFilter<T, H: HasherWithSeed = MurmurHash, C: Container<T> = Vec<T>>
 where
     T: Immutable + IntoBytes + PartialEq
 {
@@ -51,7 +51,7 @@ impl<T, H, C> BloomFilter<T, H, C>
 where
     T: Immutable + IntoBytes + PartialEq,
     H: HasherWithSeed,
-    C: BloomFilterContainer<T>
+    C: Container<T>
 {
     const ABS_ERROR_RATE_LN: f32 = 2.9957323; // |ln(0.05)|
 
@@ -120,17 +120,11 @@ impl<T, H, C> HasLength for BloomFilter<T, H, C>
 where 
     T: Immutable + IntoBytes + PartialEq,
     H: HasherWithSeed,
-    C: BloomFilterContainer<T>
+    C: Container<T>
 {
     fn len(&self) -> usize {
         self.container.len()
     }
-}
-
-pub trait BloomFilterContainer<T>: HasLength {
-    fn new() -> Self;
-    fn contains(&self, value: &T) -> bool;
-    fn insert(&mut self, value: T);
 }
 
 impl<T> HasLength for Vec<T> {
@@ -139,20 +133,23 @@ impl<T> HasLength for Vec<T> {
     }
 }
 
-impl<T> BloomFilterContainer<T> for Vec<T> 
-where T: PartialEq{
+impl<T> Insertable<T> for Vec<T> 
+where T: PartialEq 
+{
     fn new() -> Self {
         vec![]
-    }
-
-    fn contains(&self, value: &T) -> bool {
-       self.as_slice().contains(value)
     }
 
     fn insert(&mut self, value: T) {
         self.push(value);
     }
+
+    fn contains(&self, value: &T) -> bool {
+        self.as_slice().contains(value)
+    }
 }
+
+impl<T> Container<T> for Vec<T> where T: PartialEq{}
 
 pub trait HasherWithSeed {
     fn hash(&self, data: &[u8], seed: usize) -> usize;
